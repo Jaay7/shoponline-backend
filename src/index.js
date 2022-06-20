@@ -4,14 +4,19 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import typeDefs from './graphql/typedefs';
 import resolvers from './graphql/resolvers';
+import cors from 'cors';
 
 require('dotenv').config();
 
 const Server = async () => {
   const app = express();
 
+  var corsOptions = {
+    origin: ['http://localhost:3000', 'https://shoponline-alpha.vercel.app/'],
+  };
   app.disable('x-powered-by');
 
+  app.use(cors(corsOptions));
   app.use(bodyParser.json());
 
   const server = new ApolloServer({
