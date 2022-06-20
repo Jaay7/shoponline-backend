@@ -2,7 +2,7 @@ import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
-import typeDefs from './graphql/typedefs';
+import typeDefs from './graphql/typeDefs';
 import resolvers from './graphql/resolvers';
 import cors from 'cors';
 
