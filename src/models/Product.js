@@ -24,6 +24,14 @@ const ProductSchema = new Schema({
     type: String,
     default: new Date().toLocaleString(),
   },
+  savedBy: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
+  cartBy: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+  }],
 },{timestamps: false});
 
 const Product = model('Product', ProductSchema);

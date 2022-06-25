@@ -6,6 +6,8 @@ const typeDefs = gql`
     productsByCategory(category: String): [Product]
     product(id: ID!): Product
     me: User
+    productsInMyCart: [Product]
+    savedProducts: [Product]
   }
 
   type User {
@@ -20,6 +22,8 @@ const typeDefs = gql`
     state: String!
     country: String!
     createdAt: String
+    savedProducts: [Product!]!
+    cartProducts: [Product!]!
   }
 
   type Auth {
@@ -36,6 +40,8 @@ const typeDefs = gql`
     image: String!
     category: String
     createdAt: String
+    savedBy: [User!]!
+    cartBy: [User!]!
   }
 
   type Mutation {
@@ -79,6 +85,10 @@ const typeDefs = gql`
       country: String!
     ): String!
     deleteUser(id: ID!): String
+    addToCart(productId: ID!): String
+    removeFromCart(productId: ID!): String
+    addToSavedProducts(productId: ID!): String
+    removeFromSavedProducts(productId: ID!): String
   }
 `;
 

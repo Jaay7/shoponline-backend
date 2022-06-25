@@ -20,6 +20,14 @@ const resolvers = {
       const authUser = await getAuthUser(req, true);
       return User.findById(authUser.id);
     },
+    productsInMyCart: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      return authUser.cartProducts;
+    },
+    savedProducts: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      return authUser.savedProducts;
+    }
   },
   Mutation: {
     createProduct: async (root, args, {req, res}) => {
@@ -107,7 +115,91 @@ const resolvers = {
       await User.findByIdAndUpdate(authUser.id, args, { new: true });
       return 'User updated successfully';
     },
+    addToCart: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      const product = await Product.findById(args.productId);
+      if (!product) {
+        return 'Product not found';
+      }
+      if (!authUser.cartProducts.includes(product.id)) {
+        authUser.cartProducts.push(product.id);
+        product.cartBy.push(authUser.id);
+        await authUser.save();
+        await product.save();
+        return 'Product added to cart successfully';
+      } else {
+        return 'Product already in cart';
+      }
+    },
+    removeFromCart: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      const product = await Product.findById(args.productId);
+      if (!product) {
+        return 'Product not found';
+      }
+      if (authUser.cartProducts.includes(product.id)) {
+        authUser.cartProducts.splice(authUser.cartProducts.indexOf(product.id), 1);
+        product.cartBy.splice(product.cartBy.indexOf(authUser.id), 1);
+        await authUser.save();
+        await product.save();
+        return 'Product removed from cart successfully';
+      } else {
+        return 'Product not in cart';
+      }
+    },
+    addToSavedProducts: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      const product = await Product.findById(args.productId);
+      if (!product) {
+        return 'Product not found';
+      }
+      if (!authUser.savedProducts.includes(product.id)) {
+        authUser.savedProducts.push(product.id);
+        product.savedBy.push(authUser.id);
+        await authUser.save();
+        await product.save();
+        return 'Product added to saved products successfully';
+      } else {
+        return 'Product already in saved products';
+      }
+    },
+    removeFromSavedProducts: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      const product = await Product.findById(args.productId);
+      if (!product) {
+        return 'Product not found';
+      }
+      if (authUser.savedProducts.includes(product.id)) {
+        authUser.savedProducts.splice(authUser.savedProducts.indexOf(product.id), 1);
+        product.savedBy.splice(product.savedBy.indexOf(authUser.id), 1);
+        await authUser.save();
+        await product.save();
+        return 'Product removed from saved products successfully';
+      } else {
+        return 'Product not in saved products';
+      }
+    }
   },
+  User: {
+    savedProducts: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      return Product.find({ savedBy: authUser.id });
+    },
+    cartProducts: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      return Product.find({ cartBy: authUser.id });
+    }
+  },
+  Product: {
+    savedBy: async (root, args, { req }) => {
+      await getAuthUser(req, true);
+      return User.find({ savedProducts: root.id });
+    },
+    cartBy: async (root, args, { req }) => {
+      await getAuthUser(req, true);
+      return User.find({ cartProducts: root.id });
+    }
+  }
 };
 
 export default resolvers;

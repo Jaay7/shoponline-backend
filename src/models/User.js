@@ -44,7 +44,15 @@ const UserSchema = new Schema({
   createdAt: {
     type: String,
     default: new Date().toLocaleString(),
-  }
+  },
+  savedProducts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+  }],
+  cartProducts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Product',
+  }],
 }, {
   timestamps: false,
 });
