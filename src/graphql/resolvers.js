@@ -2,6 +2,8 @@ import bcrypt from 'bcryptjs';
 import User from '../models/User';
 import Product from "../models/Product";
 import { issueToken, getAuthUser, getRefreshTokenUser } from '../utils/authentication';
+import Orders from './../models/Orders';
+
 const resolvers = {
   Query: {
     products: async (root, args, {req, res}) => {
@@ -27,6 +29,20 @@ const resolvers = {
     savedProducts: async (root, args, { req }) => {
       const authUser = await getAuthUser(req, true);
       return authUser.savedProducts;
+    },
+    orders: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      if (authUser.userType === 'admin') {
+        return Orders.find();
+      }
+      return Orders.find({ orderBy: authUser.id });
+    },
+    order: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      if (authUser.userType === 'admin') {
+        return Orders.findById(args.id);
+      }
+      return Orders.findById(args.id, { orderBy: authUser.id });
     }
   },
   Mutation: {
@@ -178,6 +194,31 @@ const resolvers = {
       } else {
         return 'Product not in saved products';
       }
+    },
+    createOrder: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, args);
+      try {
+        const order = new Orders({orderBy: authUser.id, ...args });
+        await order.save();
+        return 'Order created successfully';
+      } catch (error) {
+        return error;
+      }
+    },
+    cancelOrder: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, args);
+      try {
+        const order = await Orders.findById(args.orderId);
+        if (order.orderBy.toString() === authUser.id.toString()) {
+          order.status = 'cancelled';
+          await order.save();
+          return 'Order cancelled successfully';
+        } else {
+          return 'You are not authorized to cancel this order';
+        }
+      } catch (error) {
+        return error;
+      }
     }
   },
   User: {
@@ -198,6 +239,18 @@ const resolvers = {
     cartBy: async (root, args, { req }) => {
       await getAuthUser(req, true);
       return User.find({ cartProducts: root.id });
+    }
+  },
+  Orders: {
+    orderBy: async (root, args, { req }) => {
+      const authUser = await getAuthUser(req, true);
+      return User.findById(authUser.id);
+    },
+  },
+  OrderProducts: {
+    product: async (root, args, { req }) => {
+      await getAuthUser(req, true);
+      return Product.findById(root.product);
     }
   }
 };

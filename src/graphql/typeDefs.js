@@ -8,6 +8,8 @@ const typeDefs = gql`
     me: User
     productsInMyCart: [Product]
     savedProducts: [Product]
+    orders: [Orders]
+    order(id: ID!): Orders
   }
 
   type User {
@@ -42,6 +44,25 @@ const typeDefs = gql`
     createdAt: String
     savedBy: [User!]!
     cartBy: [User!]!
+  }
+
+  input OrderProductsInput {
+    product: ID
+    quantity: Int
+  }
+
+  type OrderProducts {
+    product: Product
+    quantity: Int
+  }
+
+  type Orders {
+    id: ID
+    orderBy: User
+    orderProducts: [OrderProducts]
+    totalPrice: String
+    status: String
+    createdAt: String
   }
 
   type Mutation {
@@ -89,6 +110,11 @@ const typeDefs = gql`
     removeFromCart(productId: ID!): String
     addToSavedProducts(productId: ID!): String
     removeFromSavedProducts(productId: ID!): String
+    createOrder(
+      orderProducts: [OrderProductsInput]
+      totalPrice: String
+    ): String
+    cancelOrder(orderId: ID!): String
   }
 `;
 
