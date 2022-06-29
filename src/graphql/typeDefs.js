@@ -60,7 +60,7 @@ const typeDefs = gql`
     id: ID
     orderBy: User
     orderProducts: [OrderProducts]
-    totalPrice: String
+    totalPrice: Int
     status: String
     createdAt: String
   }
@@ -112,7 +112,7 @@ const typeDefs = gql`
     removeFromSavedProducts(productId: ID!): String
     createOrder(
       orderProducts: [OrderProductsInput]
-      totalPrice: String
+      totalPrice: Int
     ): String
     cancelOrder(orderId: ID!): String
   }
