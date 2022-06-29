@@ -72,6 +72,7 @@ const typeDefs = gql`
       description: String
       image: String!
       category: String
+      createdAt: String
     ): String
     updateProduct(
       id: ID!
@@ -113,6 +114,7 @@ const typeDefs = gql`
     createOrder(
       orderProducts: [OrderProductsInput]
       totalPrice: Int
+      createdAt: String
     ): String
     cancelOrder(orderId: ID!): String
   }
