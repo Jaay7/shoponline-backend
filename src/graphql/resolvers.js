@@ -243,8 +243,8 @@ const resolvers = {
   },
   Orders: {
     orderBy: async (root, args, { req }) => {
-      const authUser = await getAuthUser(req, true);
-      return User.findById(authUser.id);
+      await getAuthUser(req, true);
+      return User.findById(root.orderBy);
     },
   },
   OrderProducts: {
