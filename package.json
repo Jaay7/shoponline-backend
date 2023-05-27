@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "nodemon --exec babel-node src/index.js",
-    "start": "babel-node src/index.js --ignore ./node_modules"
+    "start": "babel-node src/index.js --ignore ./node_modules",
+    "build": "babel src --out-dir dist"
   },
   "dependencies": {
     "@babel/cli": "^7.17.10",
